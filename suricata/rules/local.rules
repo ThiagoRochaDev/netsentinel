@@ -1,0 +1,22 @@
+# Local custom rules. SIDs >= 1000000 are reserved for local/custom use so
+# they never collide with the Emerging Threats Open ruleset (installed via
+# suricata-update, see ../../scripts/setup_suricata_rules.sh).
+
+# Self-test rule: lets you verify the whole pipeline (Suricata -> eve.json ->
+# backend -> alert -> dashboard/TUI) works end-to-end without waiting for a
+# real threat. Trigger it with:
+#   curl -A "NetSentinel-Test" http://example.com/
+alert http any any -> any any (msg:"NETSENTINEL TEST self-check signature"; \
+  http.user_agent; content:"NetSentinel-Test"; sid:1000001; rev:1; \
+  classtype:not-suspicious; priority:3;)
+
+# Cleartext credential protocols from this host (feeds the
+# 'cleartext_credential_protocol' alert rule). Matched on the app-layer
+# protocol keyword (real FTP/Telnet dialogue), NOT just the port number —
+# a bare TCP connect to port 21/23 (e.g. our own gateway exposure check in
+# discovery_portscan.py, which uses nmap -sT) completes a handshake but
+# never speaks FTP/Telnet, so it correctly does NOT match these.
+alert ftp any any -> any any (msg:"NETSENTINEL cleartext FTP control channel used by this host"; \
+  sid:1000002; rev:1; classtype:policy-violation;)
+alert telnet any any -> any any (msg:"NETSENTINEL cleartext Telnet used by this host"; \
+  sid:1000003; rev:1; classtype:policy-violation;)

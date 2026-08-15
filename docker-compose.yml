@@ -1,0 +1,47 @@
+# All three services use network_mode: host so Suricata (af-packet),
+# the ARP discovery collector (scapy), and nmap can see this machine's real
+# network interface directly. That's why there's no `ports:` mapping and no
+# Docker bridge network here — see docs/ARCHITECTURE.md for the trade-off.
+#
+# NOTHING here touches the router, and nothing here runs against any device
+# other than this host and light/passive LAN discovery — see
+# docs/PHASE1_SCOPE.md.
+
+services:
+  suricata:
+    build: ./suricata
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_NICE
+    env_file: .env
+    volumes:
+      - suricata_logs:/var/log/suricata
+      - suricata_rules:/var/lib/suricata/rules
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    env_file: .env
+    volumes:
+      - ./backend/data:/data
+      - suricata_logs:/var/log/suricata:ro
+    depends_on:
+      - suricata
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    network_mode: host
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  suricata_logs:
+  suricata_rules:

@@ -1,0 +1,122 @@
+%YAML 1.1
+---
+# NetSentinel's Suricata config. Deliberately scoped: af-packet only listens
+# on THIS host's interface in normal (non-monitor) mode, so it only ever sees
+# traffic addressed to/from this host plus broadcast/multicast — see
+# ../docs/PHASE1_SCOPE.md. HOME_NET below only affects alert directionality
+# (which side rules treat as "local"), not what gets captured.
+#
+# __NETSENTINEL_IFACE__ and __NETSENTINEL_HOME_NET__ are substituted by
+# entrypoint.sh from .env at container start.
+
+vars:
+  # Full standard OISF default set — the Emerging Threats Open ruleset
+  # references all of these; leaving any out makes Suricata reject every
+  # signature that mentions the missing variable.
+  address-groups:
+    HOME_NET: "[__NETSENTINEL_HOME_NET__]"
+    EXTERNAL_NET: "!$HOME_NET"
+    HTTP_SERVERS: "$HOME_NET"
+    SMTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+    DNS_SERVERS: "$HOME_NET"
+    TELNET_SERVERS: "$HOME_NET"
+    AIM_SERVERS: "$EXTERNAL_NET"
+    DC_SERVERS: "$HOME_NET"
+    DNP3_SERVER: "$HOME_NET"
+    DNP3_CLIENT: "$HOME_NET"
+    MODBUS_CLIENT: "$HOME_NET"
+    MODBUS_SERVER: "$HOME_NET"
+    ENIP_CLIENT: "$HOME_NET"
+    ENIP_SERVER: "$HOME_NET"
+  port-groups:
+    HTTP_PORTS: "80"
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
+    FILE_DATA_PORTS: "[$HTTP_PORTS,110,143]"
+    FTP_PORTS: 21
+    GENEVE_PORTS: 6081
+    VXLAN_PORTS: 4789
+    TEREDO_PORTS: 3544
+
+default-log-dir: /var/log/suricata/
+
+stats:
+  enabled: yes
+  interval: 30
+
+logging:
+  default-log-level: notice
+  outputs:
+    - console:
+        enabled: yes
+    - file:
+        enabled: yes
+        filename: suricata.log
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      rotate-interval: day
+      types:
+        - alert:
+            payload: no
+            packet: no
+            metadata: yes
+        - flow:
+        - dns:
+        - http:
+        - tls:
+        - ssh:
+        - stats:
+            totals: yes
+            threads: no
+
+  - stats:
+      enabled: yes
+      filename: stats.log
+
+af-packet:
+  - interface: __NETSENTINEL_IFACE__
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+    use-mmap: yes
+
+app-layer:
+  protocols:
+    tls:
+      enabled: yes
+    http:
+      enabled: yes
+    dns:
+      enabled: yes
+    ssh:
+      enabled: yes
+    ftp:
+      enabled: yes
+    telnet:
+      enabled: yes
+
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - suricata.rules
+  - /etc/suricata/local-rules/local.rules
+
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
+
+host-mode: auto
+# The base image (jasonish/suricata) ships /etc/suricata's config files,
+# /var/lib/suricata/rules, and /var/log/suricata all owned by this UID —
+# Suricata drops CAP_DAC_OVERRIDE once it applies run-as (even when the
+# target is nominally root), so this must match the actual file owner or
+# every read/write in those paths fails with "Permission denied".
+run-as:
+  user: suricata
+  group: suricata

@@ -1,0 +1,23 @@
+# Overlay for Raspberry Pi deployment:
+#   docker compose -f docker-compose.yml -f docker-compose.rpi.yml up -d --build
+#
+# Base images (python:3.13-slim, node:20-alpine, nginx:alpine,
+# jasonish/suricata) are already multi-arch, so Docker pulls the arm64
+# variant automatically — nothing to pin here. What differs on a Pi is
+# available RAM/CPU, so this just adds conservative resource caps for the
+# two heaviest services (Suricata's rule matching, backend's discovery +
+# occasional nmap scans) to avoid one of them starving the others on
+# constrained hardware.
+
+services:
+  suricata:
+    mem_limit: 512m
+    cpus: "1.5"
+
+  backend:
+    mem_limit: 384m
+    cpus: "1.0"
+
+  frontend:
+    mem_limit: 128m
+    cpus: "0.5"

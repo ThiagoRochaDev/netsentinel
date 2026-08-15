@@ -1,0 +1,338 @@
+/* NetSentinel — dark-first theme, built from the validated dataviz palette
+   (see dataviz skill references/palette.md). Dark surface throughout since
+   this is a security-ops tool meant to run always-visible, Datadog/Grafana
+   style — not a document that needs a light counterpart. */
+
+:root {
+  color-scheme: dark;
+
+  --surface-0: #0d0d0d; /* page plane */
+  --surface-1: #1a1a19; /* card / chart surface */
+  --surface-2: #222221; /* raised surface (hover rows, inputs) */
+
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+
+  --gridline: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255, 255, 255, 0.1);
+
+  /* Categorical series (fixed order — never cycle/reassign) */
+  --series-1: #3987e5; /* blue */
+  --series-2: #d95926; /* orange */
+  --series-3: #199e70; /* aqua */
+  --series-4: #c98500; /* yellow */
+  --series-5: #d55181; /* magenta */
+  --series-6: #008300; /* green */
+  --series-7: #9085e9; /* violet */
+  --series-8: #e66767; /* red */
+
+  /* Sequential (blue ramp) */
+  --seq-100: #cde2fb;
+  --seq-300: #6da7ec;
+  --seq-500: #256abf;
+  --seq-700: #0d366b;
+
+  /* Status palette (fixed — never themed, never reused as series color) */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  --success-text: #0ca30c;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--series-1);
+  color: #fff;
+}
+
+a {
+  color: var(--series-1);
+}
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gridline);
+  font-size: 13px;
+}
+
+th {
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+tbody tr:hover {
+  background: var(--surface-2);
+}
+
+input,
+select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--series-1);
+  outline-offset: -1px;
+}
+
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-2);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- Responsive shell (sidebar + topbar) ---------- */
+/* Desktop default: sidebar is a static column, always visible; no topbar,
+   no backdrop, no hamburger — .topbar is hidden entirely above the
+   tablet breakpoint. */
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+  min-height: 0;
+}
+
+.topbar {
+  display: none;
+}
+
+.topbar-menu-btn,
+.sidebar-collapse-btn,
+.sidebar-expand-fab {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.topbar-menu-btn:hover,
+.sidebar-collapse-btn:hover,
+.sidebar-expand-fab:hover {
+  color: var(--text-primary);
+  background: var(--surface-2);
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+/* The inline collapse button lives inside the sidebar header — useful on
+   desktop where the sidebar is a persistent panel, but redundant in the
+   mobile/tablet drawer (which already has the topbar hamburger for this).
+   The floating expand button is desktop-only for the same reason: mobile
+   always has the topbar hamburger visible regardless of drawer state. */
+.sidebar-collapse-btn {
+  display: none;
+}
+
+.sidebar-expand-fab {
+  display: none;
+}
+
+@media (min-width: 1025px) {
+  .sidebar-collapse-btn {
+    display: flex;
+  }
+
+  .sidebar {
+    overflow: hidden;
+    transition: width 0.2s ease, padding 0.2s ease;
+  }
+
+  .sidebar:not(.open) {
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-right: none;
+  }
+
+  .sidebar-expand-fab {
+    display: flex;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 50;
+    background: var(--surface-1);
+  }
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  padding: 28px;
+  background: var(--surface-0);
+}
+
+/* Tablet and phone: sidebar becomes an off-canvas drawer toggled by the
+   hamburger button in the topbar, so it starts hidden and never eats
+   screen space until the user asks for it. */
+@media (max-width: 1024px) {
+  .app-shell {
+    flex-direction: column;
+    height: 100dvh;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface-1);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .topbar-menu-btn {
+    width: 36px;
+    height: 36px;
+    color: var(--text-primary);
+  }
+
+  .topbar-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: 260px;
+    max-width: 82vw;
+    z-index: 101;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+
+  .sidebar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 12px;
+  }
+}
+
+/* ---------- Responsive grids ---------- */
+/* Used instead of a fixed repeat(N, 1fr) so KPI tiles and multi-column
+   panels reflow to fewer columns automatically as the viewport narrows,
+   with no extra breakpoints to maintain per page. */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.two-col-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}

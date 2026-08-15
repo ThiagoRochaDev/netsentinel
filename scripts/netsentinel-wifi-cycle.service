@@ -1,0 +1,14 @@
+[Unit]
+Description=NetSentinel dual-network Wi-Fi cycle (covers a secondary SSID periodically)
+After=network-online.target
+
+[Service]
+Type=oneshot
+# Fill in your own network before installing this unit (see install_wifi_cycle.sh).
+Environment=NETSENTINEL_PRIMARY_SSID=CHANGE_ME
+Environment=NETSENTINEL_SECONDARY_SSID=CHANGE_ME_5G
+Environment=NETSENTINEL_WIFI_IFACE=wlan0
+Environment=NETSENTINEL_SECONDARY_DWELL_SECONDS=300
+ExecStart=%h/netsentinel/scripts/wifi_cycle.sh
+StandardOutput=journal
+StandardError=journal

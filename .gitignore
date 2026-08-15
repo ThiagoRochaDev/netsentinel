@@ -1,0 +1,16 @@
+.env
+*.db
+*.db-wal
+*.db-shm
+backend/data/*
+!backend/data/.gitkeep
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+frontend/dist/
+.DS_Store
+*.log
+suricata/rules/*.rules
+!suricata/rules/local.rules
+tui/.config/

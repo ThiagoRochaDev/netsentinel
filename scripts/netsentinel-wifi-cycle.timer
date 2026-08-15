@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the NetSentinel dual-network Wi-Fi cycle every 2 hours
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=2h
+Persistent=false
+
+[Install]
+WantedBy=timers.target
