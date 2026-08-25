@@ -3,7 +3,6 @@ mDNS chatter devices already broadcast on the LAN (_http._tcp, _device-info,
 _googlecast, _airplay, etc). Purely passive — we only listen, never probe."""
 
 import logging
-import socket
 
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 

@@ -7,6 +7,9 @@ backend/data/*
 __pycache__/
 *.pyc
 .venv/
+.venv_setup/
+*.egg-info/
+.pytest_cache/
 node_modules/
 frontend/dist/
 .DS_Store

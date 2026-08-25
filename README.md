@@ -86,12 +86,26 @@ Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Suricata + coletores
 (ARP/mDNS/nmap) alimentando um backend FastAPI/SQLite, consumido por um
 frontend React e por uma TUI, ambos pela mesma API REST/WebSocket.
 
+## Desenvolvimento
+
+```bash
+cd backend
+pip install -e ".[dev]"
+pytest              # roda a suíte de testes
+ruff check .        # lint
+alembic upgrade head  # aplica a migração baseline num banco novo
+```
+
 ## Status do projeto
 
 Fase 1 (descrita em [docs/PHASE1_SCOPE.md](docs/PHASE1_SCOPE.md)) está
-funcional e é o que está documentado aqui. Ainda não há suíte de testes
-automatizados nem migrações Alembic versionadas — próximos passos naturais
-antes de uma Fase 2 (integração opcional e explícita com o roteador).
+funcional e é o que está documentado aqui. v0.1.0: primeira release pública,
+com suíte de testes automatizados (alert engine + API), CI no GitHub Actions
+e migração Alembic baseline versionada — o schema ainda nasce via
+`create_all` no boot (self-hosted, instalação única, sem histórico de deploy
+a preservar), mas qualquer mudança de schema daqui pra frente vira revisão
+Alembic. Próximo passo natural: Fase 2 (integração opcional e explícita com
+o roteador).
 
 ## Licença
 

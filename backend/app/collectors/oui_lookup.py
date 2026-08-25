@@ -69,7 +69,6 @@ _BUILTIN: dict[str, str] = {
     "08:00:27": "VirtualBox (virtual NIC)",
     "00:0C:29": "VMware (virtual NIC)",
     "00:50:56": "VMware (virtual NIC)",
-    "DC:A6:32": "Raspberry Pi Foundation",
 }
 
 

@@ -67,6 +67,13 @@ def get_write_session():
 
 
 def init_db() -> None:
+    # Continua criando via create_all no boot (comportamento inalterado) — é
+    # instalação self-hosted de usuário único, sem histórico de deploy a
+    # preservar, então não há ganho em trocar por `alembic upgrade head` aqui.
+    # A migração baseline em alembic/versions/ existe pra registrar o schema
+    # atual e servir de ponto de partida: qualquer mudança de schema *daqui
+    # pra frente* deve virar uma revisão Alembic (`alembic revision
+    # --autogenerate`), não um ajuste direto no create_all.
     from app import models  # noqa: F401  (ensures models are registered)
 
     Base.metadata.create_all(bind=engine)

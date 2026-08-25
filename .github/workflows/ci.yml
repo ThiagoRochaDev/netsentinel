@@ -1,0 +1,45 @@
+name: CI (backend)
+
+# Lint + testes (pytest) do backend. Roda em todo push/PR pra main — é só
+# validação, não deploy (NetSentinel é self-hosted, não tem deploy pra nuvem).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      SECRET_KEY: ci-test-secret-key-not-for-production
+      ADMIN_PASSWORD_HASH: "$2b$12$C6UzMDM.H6dfI/f/IKcEeOgxPn2X/y3fF3sT9mS9V6c1e1e1e1e1e"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Run tests
+        run: pytest -v
+
+      - name: Verify Alembic baseline migration applies cleanly
+        run: |
+          rm -f /tmp/ci-baseline-check.db
+          NETSENTINEL_DB_PATH=/tmp/ci-baseline-check.db alembic upgrade head
