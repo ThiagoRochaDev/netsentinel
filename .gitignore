@@ -17,3 +17,5 @@ frontend/dist/
 suricata/rules/*.rules
 !suricata/rules/local.rules
 tui/.config/
+frontend/tsconfig.tsbuildinfo
+*.tsbuildinfo
