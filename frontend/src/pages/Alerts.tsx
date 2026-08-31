@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { api, type Alert } from "../api/client";
 import { SeverityBadge } from "../components/SeverityBadge";
 import { debounce } from "../utils/debounce";

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { api, type Alert, type Overview as OverviewStats, type Timeseries } from "../api/client";
 import { SeverityBadge } from "../components/SeverityBadge";
 import { StatTile } from "../components/StatTile";
